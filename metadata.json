@@ -1,0 +1,5 @@
+{
+  "name": "Sonic Group Chat",
+  "description": "A dynamic group chat application where users can interact with AI-powered Sonic the Hedgehog characters. Characters like Sonic, Tails, and Dr. Eggman join the conversation and respond in real-time, maintaining their unique personalities.",
+  "requestFramePermissions": []
+}
