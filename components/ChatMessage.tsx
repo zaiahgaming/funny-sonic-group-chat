@@ -1,45 +1,46 @@
+
 import React from 'react';
-import type { Message, Character } from '../types';
+import type { Message, CharacterHandle, CharacterProfile } from '../types';
 import { MessageType } from '../types';
-import { CHARACTERS_MAP } from '../constants';
 import Avatar from './Avatar';
 
 interface ChatMessageProps {
   message: Message;
-  userCharacter: Character | null;
+  prevMessage: Message | null;
+  charactersMap: Map<CharacterHandle, CharacterProfile>;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, userCharacter }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, prevMessage, charactersMap }) => {
   switch (message.type) {
     case MessageType.CHARACTER:
-      // FIX: Replaced 'as any' with a specific type assertion for better type safety.
-      const characterInfo = CHARACTERS_MAP.get(message.author as Character);
-      const isUserMessage = message.author === userCharacter;
+      const characterInfo = charactersMap.get(message.author);
 
-      if (isUserMessage) {
+      const isContinuation =
+        prevMessage &&
+        prevMessage.type === MessageType.CHARACTER &&
+        prevMessage.author === message.author;
+
+      if (isContinuation) {
         return (
-          <div className="flex justify-end">
-            <div className="bg-indigo-600 text-white p-3 rounded-lg rounded-br-none max-w-sm md:max-w-md shadow-lg">
-              {message.content}
-            </div>
+          <div className="flex items-center pl-14 py-0.5 group hover:bg-black/10">
+            {/* Timestamp could go here on hover */}
+            <p className="text-gray-300 leading-relaxed">{message.content}</p>
           </div>
         );
       }
 
       return (
-        <div className="flex justify-start items-end space-x-3">
-            {/* FIX: Added type assertion because inside this case, message.author is guaranteed to be a Character. */}
-            <Avatar characterName={message.author as Character} />
-            <div>
-              <p className={`font-bold text-sm mb-1 ${characterInfo?.color || 'text-gray-300'}`}>
-                {message.author}
-              </p>
-              <div className="bg-gray-800 p-3 rounded-lg rounded-bl-none max-w-sm md:max-w-md shadow-lg">
-                {message.content}
-              </div>
-            </div>
+        <div className="flex items-start space-x-4 pt-4 group hover:bg-black/10">
+          <Avatar characterProfile={characterInfo} />
+          <div>
+            <p className="font-bold leading-relaxed">
+              <span className={`${characterInfo?.color || 'text-gray-300'}`}>{message.author}</span>
+            </p>
+            <p className="text-gray-300 leading-relaxed">{message.content}</p>
+          </div>
         </div>
       );
+      
     case MessageType.SYSTEM:
       return (
         <div className="text-center text-sm text-gray-400 italic py-2">

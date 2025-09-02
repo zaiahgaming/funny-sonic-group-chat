@@ -1,16 +1,15 @@
 
 import React, { useState } from 'react';
 import SendIcon from './icons/SendIcon';
-import Avatar from './Avatar';
-import type { Character } from '../types';
 
 interface ChatInputProps {
   onSendMessage: (input: string) => void;
   isLoading: boolean;
-  userCharacter: Character | null;
+  channelName: string;
+  isDm: boolean;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, userCharacter }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, channelName, isDm }) => {
   const [input, setInput] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -20,23 +19,26 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, userCha
       setInput('');
     }
   };
+  
+  const placeholder = isDm ? `Message @${channelName}` : `Message #${channelName}`;
 
   return (
-    <div className="p-4 bg-gray-800/80 backdrop-blur-sm border-t border-indigo-500/30">
-      <form onSubmit={handleSubmit} className="flex items-center space-x-3">
-        {userCharacter && <Avatar characterName={userCharacter} />}
+    <div className="px-4 pb-4 bg-[#36393f]">
+      <form onSubmit={handleSubmit} className="flex items-center space-x-3 bg-[#40444b] rounded-lg px-4">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message..."
-          className="flex-1 bg-gray-700 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300"
+          placeholder={placeholder}
+          className="flex-1 bg-transparent py-3 text-white placeholder-gray-400 focus:outline-none"
           disabled={isLoading}
+          aria-label="Chat message input"
         />
         <button
           type="submit"
           disabled={isLoading || !input.trim()}
-          className="bg-indigo-600 text-white rounded-full p-3 hover:bg-indigo-500 disabled:bg-gray-600 disabled:cursor-not-allowed transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500"
+          className="text-indigo-400 hover:text-indigo-300 disabled:text-gray-600 disabled:cursor-not-allowed transition duration-300"
+          aria-label="Send message"
         >
           <SendIcon />
         </button>
